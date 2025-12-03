@@ -1,0 +1,82 @@
+---
+title: "Homework 2"
+author: "Julius Mondschein"
+format: gfm
+jupyter: python3
+---
+
+```{python}
+import pandas as pd 
+import statsmodels.api as sm 
+import numpy as np
+import matplotlib.pyplot as plt
+import statsmodels.formula.api as smf
+import seaborn as sns
+
+data = pd.read_csv('Top_20_Pakistani_Universities.csv') 
+
+data.head
+
+```
+
+```{python}
+data['City'] = data['Location'].str.split(',').str[0].str.strip()
+data['City'].unique()
+```
+
+1. How does the Ranking of the school correlate with the city they are located in
+
+```{python}
+model = smf.ols('Rank ~ C(Location)', data=data).fit()
+print(model.summary())
+```
+
+```{python}
+data['Location'].unique()
+```
+
+2. What does the total student size of each city look like
+
+```{python}
+model = smf.ols('Q("Total Students") ~ C(Location)', data=data).fit()
+print(model.summary())
+```
+
+```{python}
+plt.figure(figsize=(10,6))
+sns.boxplot(x='Location', y='Total Students', data=data)
+plt.title("Total Students by Location")
+plt.xticks(rotation=45)
+plt.show()
+```
+
+3. Does Wealthier City, Better University Rank?
+
+```{python}
+wealth_map = {
+    'Islamabad': 3,
+    'Lahore': 2,
+    'Karachi': 2,
+    'Rawalpindi': 2,
+    'Faisalabad': 1,
+    'Peshawar': 1,
+    'Quetta': 1
+}
+
+data['WealthScore'] = data['City'].map(wealth_map)
+```
+
+```{python}
+model = smf.ols('Rank ~ WealthScore', data=data).fit()
+print(model.summary())
+```
+
+```{python}
+plt.figure(figsize=(10,6))
+sns.regplot(x='WealthScore', y='Rank', data=data, scatter_kws={'s':70})
+plt.title("Relationship Between City Wealth and University Ranking")
+plt.xlabel("City Wealth Score (Higher = Wealthier)")
+plt.ylabel("Rank (Lower = Better)")
+plt.gca().invert_yaxis()  
+plt.show()
+```
