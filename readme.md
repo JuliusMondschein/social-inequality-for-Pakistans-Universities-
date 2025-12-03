@@ -1,4 +1,4 @@
-# Homework 2
+# Social Inequality Pakistans Universities
 Julius Mondschein
 
 ``` python
